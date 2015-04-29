@@ -1,7 +1,6 @@
 var express = require('express');
 var morgan = require('morgan');
 var swig = require('swig');
-// var html = require(__dirname + '/views/index.html');
 
 var app = express();
 
