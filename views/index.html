@@ -15,10 +15,27 @@
 
       <!-- display tweets here -->
       {% for tweet in tweets %}
-        <li>{{tweet.text}}</li>
+        <p><img id='pic' src="http://cdn.sheknows.com/articles/2013/04/Puppy_2.jpg" height='50' width='50'/></p>
+        <!-- <p id='name'>{{tweet.name}}</p>
+        <br></br>
+        <p id='tweet'>{{tweet.text}}</p> -->
+        <p><a href="/users/{{tweet.name}}">{{tweet.name}}</a> - {{ tweet.text }}</p>
       {% endfor %}
+      {% if showForm %}
+        <form action="/submit" method="POST">
+          <label for="name_field">Name:</label>
+          <input name="name" type="text" id="name_field" value="{{name}}"/>
+
+          <label for="text_field">Text:</label>
+          <input name="text" type="text" id="text_field" style="width: 350px;" />
+
+          <input type="submit" value="Submit" />
+        </form>
+      {% endif %}
 
     </div>
   </div>
+
+
 
 {% endblock %}

@@ -57,3 +57,17 @@ code {
 .content .by {
   font-weight: bold;
 }
+
+/*#pic {
+  float: left;
+}*/
+
+#name {
+  position: center;
+  float: right;
+  margin: 0 0 0 0;
+}
+
+#tweet {
+  float: right;
+}

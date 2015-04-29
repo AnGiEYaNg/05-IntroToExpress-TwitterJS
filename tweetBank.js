@@ -37,3 +37,7 @@ for(var i=0; i<10; i++) {
 console.log("this is data " + data);
 
 console.log("this is list " + list());
+
+console.log("this is fake name " + getFakeName());
+
+console.log("this is fake tweet " + getFakeTweet());
