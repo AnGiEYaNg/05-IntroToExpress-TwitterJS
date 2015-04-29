@@ -2,10 +2,12 @@ var express = require('express');
 var morgan = require('morgan');
 var swig = require('swig');
 var _ = require('underscore');
-// var routes = require('./routes/')
 var router = express.Router();
-var tweetBank = require('./tweetBank') //****
-var bodyParser = require('body-parser')
+var tweetBank = require('./tweetBank');
+var bodyParser = require('body-parser');
+var routes = require('./routes/');
+var socketio = require('socket.io');
+
 
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -16,6 +18,7 @@ app.use(bodyParser.json())
 app.use(morgan('dev'))
 // app.use('/', routes);
 app.use(express.static(__dirname + '/public'));
+
 // app.use(function (req, res) {
 //   res.setHeader('Content-Type', 'text/plain')
 //   res.write('you posted:\n')
@@ -38,27 +41,7 @@ swig.setDefaults({ cache: false });
 // app.get('/news', function (req, res) {
 //   res.send('This is news')
 // })
-app.get('/', function (req, res) {
-  var tweets = tweetBank.list();
 
-  res.render('index', {title: 'Twitter.js', tweets: tweets, showForm:true});
-});
-
-app.get('/users/:name', function (req, res) {
-  var name = req.params.name;
-  var tweets = tweetBank.list();
-  var list = tweetBank.find({name: name});
-  res.render('index', {title: 'Twitter.js - Posts by '+name, tweets: list, showForm:true, name: name});
-});
-
-//challenge: add a single-tweet route
-
-app.post('/submit', function(req, res) {
-  var name = req.body.name;
-  var text = req.body.text;
-  tweetBank.add(name, text);
-  res.redirect('/');
-});
 
 // app.post('/users/:name', function(req, res) {
 //   var name = req.params.name;
@@ -67,8 +50,11 @@ app.post('/submit', function(req, res) {
 //   res.redirect('/users/'+name);
 // });
 
-module.exports = router;
+// module.exports = router;
 
 var server = app.listen(3000, function() {
   console.log('listening')
 })
+var io = socketio.listen(server);
+app.use('/', routes(io));
+io.sockets.emit('new_tweet', { tweet: 'hello'});
