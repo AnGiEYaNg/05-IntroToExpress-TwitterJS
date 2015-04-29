@@ -7,15 +7,17 @@ var app = express();
 //dev format: ":method :url :status :response-time ms - :res[content-length]"
 app.use(morgan('dev'))
 
-app.engine('swig', swig.renderFile);
+app.engine('swig', require('swig').renderFile);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
 // app.set('view cache', false);
 swig.setDefaults({ cache: false });
 
+var people = [{name: 'Full'}, {name: 'Stacker'}, {name: 'Son'}];
+
 app.get('/', function (req, res) {
-  res.send('Hello World')
+  res.render( 'index', {title: 'Hall of Fame', people: people} );
 })
 
 app.get('/news', function (req, res) {
