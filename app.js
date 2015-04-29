@@ -1,17 +1,18 @@
 var express = require('express');
 var morgan = require('morgan');
 var swig = require('swig');
+// var html = require(__dirname + '/views/index.html');
 
 var app = express();
 
 //dev format: ":method :url :status :response-time ms - :res[content-length]"
 app.use(morgan('dev'))
 
-app.engine('swig', require('swig').renderFile);
+app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
-// app.set('view cache', false);
+app.set('view cache', false);
 swig.setDefaults({ cache: false });
 
 var people = [{name: 'Full'}, {name: 'Stacker'}, {name: 'Son'}];
