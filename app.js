@@ -11,6 +11,7 @@ var app = express();
 //dev format: ":method :url :status :response-time ms - :res[content-length]"
 app.use(morgan('dev'))
 // app.use('/', routes);
+app.use(express.static(__dirname + '/public'));
 
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
@@ -28,12 +29,12 @@ swig.setDefaults({ cache: false });
 // app.get('/news', function (req, res) {
 //   res.send('This is news')
 // })
-router.get('/', function (req, res) {
+app.get('/', function (req, res) {
   var tweets = tweetBank.list();
   res.render('index', {title: 'Twitter.js', tweets: tweets});
 });
 
-module.exports = rpouter
+module.exports = router;
 
 
 var server = app.listen(3000, function() {
