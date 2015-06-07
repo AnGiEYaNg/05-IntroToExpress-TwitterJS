@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
-
+ 
 {% block content %}
-
+  
   <div class="page-header">
-    <h1>Welcome to Twitter.js, Nimit!</h1>
+    <h1>{{ title }}</h1>
   </div>
   <div class="row">
     <div class="col-md-3">
@@ -12,19 +12,22 @@
       100 followers
     </div>
     <div class="col-md-9">
-
+    
       <!-- display tweets here -->
       {% for tweet in tweets %}
-        <p><img id='pic' src="http://cdn.sheknows.com/articles/2013/04/Puppy_2.jpg" height='50' width='50'/></p>
-        <!-- <p id='name'>{{tweet.name}}</p>
-        <br></br>
-        <p id='tweet'>{{tweet.text}}</p> -->
-        <p><a href="/users/{{tweet.name}}">{{tweet.name}}</a> - {{ tweet.text }}</p>
+        <div class="tweetbox">
+          <img src="http://lorempixel.com/48/48" />
+          <div class="content">
+            <a class="by" href="/users/{{ tweet.name }}">{{ tweet.name }}</a>
+            <a href="/users/{{ tweet.name }}/tweets/{{ tweet.id }}">{{tweet.text}}</a>
+          </div>
+        </div>
       {% endfor %}
+
       {% if showForm %}
         <form action="/submit" method="POST">
           <label for="name_field">Name:</label>
-          <input name="name" type="text" id="name_field" value="{{name}}"/>
+          <input name="name" type="text" id="name_field" />
 
           <label for="text_field">Text:</label>
           <input name="text" type="text" id="text_field" style="width: 350px;" />
@@ -32,10 +35,8 @@
           <input type="submit" value="Submit" />
         </form>
       {% endif %}
-
+      
     </div>
   </div>
-
-
-
+    
 {% endblock %}

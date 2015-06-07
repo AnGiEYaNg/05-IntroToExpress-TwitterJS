@@ -1,32 +1,50 @@
-var express = require('express');
-var socketio = require('socket.io');
+var router = require('express').Router();
 
-var router = express.Router();
-// could use one line instead: var router = require('express').Router();
 var tweetBank = require('../tweetBank');
 
-module.exports = function(io) {
+function routes (io) {
   router.get('/', function (req, res) {
-    var tweets = tweetBank.list();
-
-    res.render('index', {title: 'Twitter.js', tweets: tweets, showForm:true});
+    // send the index.html
+    var allTweets = tweetBank.list();
+    res.render('index', {
+      title: 'Twitter.js - all tweets',
+      showForm: true,
+      tweets: allTweets
+    });
   });
 
   router.get('/users/:name', function (req, res) {
-    var name = req.params.name;
-    var tweets = tweetBank.list();
-    var list = tweetBank.find({name: name});
-    res.render('index', {title: 'Twitter.js - Posts by '+name, tweets: list, showForm:true, name: name});
+    var userName = req.params.name,
+      userTweets = tweetBank.find({name: userName});
+    res.render('index', {
+      title: 'Posts by - ' + userName,
+      showForm: true,
+      tweets: userTweets
+    });
   });
 
-  //challenge: add a single-tweet route
+  router.get('/users/:name/tweets/:id', function (req, res) {
+    var userName = req.params.name,
+      tweetId = parseInt(req.params.id),
+      userTweets = tweetBank.find({id: tweetId});
+    res.render('index', {
+      title: 'Tweet ' + tweetId + ' by ' + userName,
+      tweets: userTweets
+    });
+  });
 
-  router.post('/submit', function(req, res) {
-    var name = req.body.name;
-    var text = req.body.text;
-    tweetBank.add(name, text);
+  router.post('/submit', function (req, res) {
+    var tweetName = req.body.name,
+      tweetText = req.body.text;
+    tweetBank.add(tweetName, tweetText);
+    var allTweets = tweetBank.list(),
+      newTweet = allTweets[allTweets.length - 1];
+    io.sockets.emit('new_tweet', newTweet);
     res.redirect('/');
   });
-  
+
   return router;
 }
+
+
+module.exports = routes;

@@ -1,60 +1,49 @@
-var express = require('express');
-var morgan = require('morgan');
-var swig = require('swig');
-var _ = require('underscore');
-var router = express.Router();
-var tweetBank = require('./tweetBank');
-var bodyParser = require('body-parser');
-var routes = require('./routes/');
-var socketio = require('socket.io');
+var express = require('express'),
+	logger = require('morgan'),
+	swig = require('swig'),
+	bodyParser = require('body-parser'),
+	socketio = require('socket.io');
+
 
 
 var app = express();
-app.use(bodyParser.urlencoded({ extended: false }))
-// parse application/json
-app.use(bodyParser.json())
 
-//dev format: ":method :url :status :response-time ms - :res[content-length]"
-app.use(morgan('dev'))
-// app.use('/', routes);
-app.use(express.static(__dirname + '/public'));
-
-// app.use(function (req, res) {
-//   res.setHeader('Content-Type', 'text/plain')
-//   res.write('you posted:\n')
-//   res.end(JSON.stringify(req.body, null, 2))
-// })
-
-app.engine('html', swig.renderFile);
-app.set('view engine', 'html');
+// where to find files to render
 app.set('views', __dirname + '/views');
-
-app.set('view cache', false);
+// what kind of files to render
+app.set('view engine', 'html');
+// how to render 'html' files
+app.engine('html', swig.renderFile);
+// caching off
 swig.setDefaults({ cache: false });
 
-// var people = [{name: 'Full'}, {name: 'Stacker'}, {name: 'Son'}];
-//
-// app.get('/', function (req, res) {
-//   res.render( 'index', {title: 'Hall of Fame', people: people} );
-// })
-//
-// app.get('/news', function (req, res) {
-//   res.send('This is news')
-// })
+// body parsing
+app.use(bodyParser.urlencoded({extended: true}));
+// urlencoded, e.g. name=Omri&favoriteColor=transparent
+app.use(bodyParser.json());
 
+// log
+app.use(logger('dev'));
 
-// app.post('/users/:name', function(req, res) {
-//   var name = req.params.name;
-//   var text = req.body.text;
-//   tweetBank.add(name, text);
-//   res.redirect('/users/'+name);
+// express.static file server
+app.use(express.static(__dirname + '/public'));
+
+// // custom file server
+// app.use(function (req, res, next) {
+// 	require('fs').readFile(__dirname + '/public' + req.path, function (err, data) {
+// 		if (err) next();
+// 		else res.send(data);
+// 	});
 // });
 
-// module.exports = router;
+// listen
+var port = 3000;
+var server = app.listen(port, function () {
+	console.log('Server listening on port', port);
+});
 
-var server = app.listen(3000, function() {
-  console.log('listening')
-})
 var io = socketio.listen(server);
-app.use('/', routes(io));
-io.sockets.emit('new_tweet', { tweet: 'hello'});
+
+var rootRouter = require('./routes')(io);
+
+app.use(rootRouter);
